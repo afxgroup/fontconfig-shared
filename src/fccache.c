@@ -53,6 +53,10 @@
 #define O_BINARY 0
 #endif
 
+#ifdef __amigaos4__
+#define	INTPTR_MAX				LONG_MAX
+#endif
+
 FcBool
 FcDirCacheCreateUUID (FcChar8  *dir,
 		      FcBool    force,

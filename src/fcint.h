@@ -74,6 +74,10 @@ extern pfnSHGetFolderPathA pSHGetFolderPathA;
 #  define FC_SEARCH_PATH_SEPARATOR ';'
 #  define FC_DIR_SEPARATOR         '\\'
 #  define FC_DIR_SEPARATOR_S       "\\"
+#elif defined(__amigaos4__)
+#  define FC_SEARCH_PATH_SEPARATOR ';'
+#  define FC_DIR_SEPARATOR         '/'
+#  define FC_DIR_SEPARATOR_S       "/"
 #else
 #  define FC_SEARCH_PATH_SEPARATOR ':'
 #  define FC_DIR_SEPARATOR         '/'

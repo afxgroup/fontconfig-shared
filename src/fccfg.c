@@ -2386,12 +2386,13 @@ FcConfigFileExists (const FcChar8 *dir, const FcChar8 *file)
 	  file[0] == '\\' ||
 	  (isalpha (file[0]) && file[1] == ':' && (file[2] == '/' || file[2] == '\\'))))
 	strcat ((char *) path, "\\");
-#else
+#elif !defined(__amigaos4__)
     if ((!path[0] || path[strlen((char *) path)-1] != '/') && file[0] != '/')
 	strcat ((char *) path, "/");
     else
 	osize--;
 #endif
+
     strcat ((char *) path, (char *) file);
 
     if (access ((char *) path, R_OK) == 0)
@@ -2496,7 +2497,10 @@ FcConfigHome (void)
 	if (home == NULL)
 	    home = getenv ("USERPROFILE");
 #endif
-
+#ifdef __amigaos4__
+	if (home == NULL)
+		home = "PROGDIR:fontconfig";
+#endif
 	return (FcChar8 *) home;
     }
     return 0;
@@ -2638,8 +2642,10 @@ FcConfigXdgDataDirs (void)
 	 *
 	 * If $XDG_DATA_DIRS is either not set or empty, a value equal to /usr/local/share/:/usr/share/ should be used.
 	 */
+#ifndef __amigaos4__	
 	FcStrSetAdd (ret, (const FcChar8 *) "/usr/local/share");
 	FcStrSetAdd (ret, (const FcChar8 *) "/usr/share");
+#endif	
     }
 
     return ret;

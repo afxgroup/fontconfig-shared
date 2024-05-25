@@ -1,0 +1,927 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE library SYSTEM "library.dtd">
+<library name="fontconfig" basename="FontconfigBase" basetype="FontconfigLibrary" openname="fontconfig.library">
+
+    <include>fontconfig/fontconfig.h</include>
+	<include>freetype/freetype.h</include>
+	<include>fontconfig/fcfreetype.h</include>
+	
+    <interface name="main" version="1.0" flags="protected" struct="FontconfigIFace" global="IFontconfig" prefix="_impl_" asmprefix="IFontconfig">
+
+        <method name="Obtain" result="uint32"/>
+        <method name="Release" result="uint32"/>
+        <method name="Expunge" result="void" status="unimplemented"/>
+        <method name="Clone" result="struct Interface *" status="unimplemented"/>
+
+		<method name="FcConfigGetRescanInverval" result="int">
+			<arg name="config" type="FcConfig *" />
+		</method>
+		<method name="FcConfigSetRescanInverval" result="FcBool">
+			<arg name="config" type="FcConfig *" />
+			<arg name="rescanInterval" type="int" />
+		</method>
+		<method name="FcFreeTypeCharIndex" result="FT_UInt">
+			<arg name="face" type="FT_Face" />
+			<arg name="ucs4" type="FcChar32" />
+		</method>
+		<method name="FcFreeTypeCharSetAndSpacing" result="FcCharSet *">
+			<arg name="face" type="FT_Face" />
+			<arg name="blanks" type="FcBlanks *" />
+			<arg name="spacing" type="int *" />
+		</method>
+		<method name="FcFreeTypeCharSet" result="FcCharSet *">
+			<arg name="face" type="FT_Face" />
+			<arg name="blanks" type="FcBlanks *" />
+		</method>
+		<method name="FcPatternGetFTFace" result="FcResult">
+			<arg name="p" type="const FcPattern *" />
+			<arg name="object" type="const char *" />
+			<arg name="n" type="int" />
+			<arg name="f" type="FT_Face *" />
+		</method>
+		<method name="FcPatternAddFTFace" result="FcBool">
+			<arg name="p" type="FcPattern *" />
+			<arg name="object" type="const char *" />
+			<arg name="f" type="const FT_Face" />
+		</method>
+		<method name="FcFreeTypeQueryFace" result="FcPattern *">
+			<arg name="face" type="const FT_Face" />
+			<arg name="file" type="const FcChar8 *" />
+			<arg name="id" type="unsigned int" />
+			<arg name="blanks" type="FcBlanks *" />
+		</method>
+		<method name="FcBlanksCreate" result="FcBlanks *" />
+		<method name="FcBlanksDestroy" result="void">
+			<arg name="b" type="FcBlanks *" />
+		</method>
+		<method name="FcBlanksAdd" result="FcBool">
+			<arg name="b" type="FcBlanks *" />
+			<arg name="ucs4" type="FcChar32" />
+		</method>
+		<method name="FcBlanksIsMember" result="FcBool">
+			<arg name="b" type="FcBlanks *" />
+			<arg name="ucs4" type="FcChar32" />
+		</method>
+		<method name="FcCacheDir" result="const FcChar8 *">
+			<arg name="c" type="const FcCache *" />
+		</method>
+		<method name="FcCacheCopySet" result="FcFontSet *">
+			<arg name="c" type="const FcCache *" />
+		</method>
+		<method name="FcCacheSubdir" result="const FcChar8 *">
+			<arg name="c" type="const FcCache *" />
+			<arg name="i" type="int" />
+		</method>
+		<method name="FcCacheNumSubdir" result="int">
+			<arg name="c" type="const FcCache *" />
+		</method>
+		<method name="FcCacheNumFont" result="int">
+			<arg name="c" type="const FcCache *" />
+		</method>
+		<method name="FcDirCacheUnlink" result="FcBool">
+			<arg name="dir" type="const FcChar8 *" />
+			<arg name="config" type="FcConfig *" />
+		</method>
+		<method name="FcDirCacheValid" result="FcBool">
+			<arg name="cache_file" type="const FcChar8 *" />
+		</method>
+		<method name="FcDirCacheClean" result="FcBool">
+			<arg name="cache_dir" type="const FcChar8 *" />
+			<arg name="verbose" type="FcBool" />
+		</method>
+		<method name="FcCacheCreateTagFile" result="void">
+			<arg name="config" type="FcConfig *" />
+		</method>
+		<method name="FcDirCacheCreateUUID" result="FcBool">
+			<arg name="dir" type="FcChar8 *" />
+			<arg name="force" type="FcBool" />
+			<arg name="config" type="FcConfig *" />
+		</method>
+		<method name="FcDirCacheDeleteUUID" result="FcBool">
+			<arg name="dir" type="const FcChar8 *" />
+			<arg name="config" type="FcConfig *" />
+		</method>
+		<method name="FcConfigHome" result="FcChar8 *" />
+		<method name="FcConfigEnableHome" result="FcBool">
+			<arg name="enable" type="FcBool" />
+		</method>
+		<method name="FcConfigGetFilename" result="FcChar8 *">
+			<arg name="config" type="FcConfig *" />
+			<arg name="url" type="const FcChar8 *" />
+		</method>
+		<method name="FcConfigFilename" result="FcChar8 *">
+			<arg name="url" type="const FcChar8 *" />
+		</method>
+		<method name="FcConfigCreate" result="FcConfig *" />
+		<method name="FcConfigReference" result="FcConfig *">
+			<arg name="config" type="FcConfig *" />
+		</method>
+		<method name="FcConfigDestroy" result="void">
+			<arg name="config" type="FcConfig *" />
+		</method>
+		<method name="FcConfigSetCurrent" result="FcBool">
+			<arg name="config" type="FcConfig *" />
+		</method>
+		<method name="FcConfigGetCurrent" result="FcConfig *" />
+		<method name="FcConfigUptoDate" result="FcBool">
+			<arg name="config" type="FcConfig *" />
+		</method>
+		<method name="FcConfigBuildFonts" result="FcBool">
+			<arg name="config" type="FcConfig *" />
+		</method>
+		<method name="FcConfigGetFontDirs" result="FcStrList *">
+			<arg name="config" type="FcConfig *" />
+		</method>
+		<method name="FcConfigGetConfigDirs" result="FcStrList *">
+			<arg name="config" type="FcConfig *" />
+		</method>
+		<method name="FcConfigGetConfigFiles" result="FcStrList *">
+			<arg name="config" type="FcConfig *" />
+		</method>
+		<method name="FcConfigGetCache" result="FcChar8 *">
+			<arg name="config" type="FcConfig *" />
+		</method>
+		<method name="FcConfigGetBlanks" result="FcBlanks *">
+			<arg name="config" type="FcConfig *" />
+		</method>
+		<method name="FcConfigGetCacheDirs" result="FcStrList *">
+			<arg name="config" type="FcConfig *" />
+		</method>
+		<method name="FcConfigGetRescanInterval" result="int">
+			<arg name="config" type="FcConfig *" />
+		</method>
+		<method name="FcConfigSetRescanInterval" result="FcBool">
+			<arg name="config" type="FcConfig *" />
+			<arg name="rescanInterval" type="int" />
+		</method>
+		<method name="FcConfigGetFonts" result="FcFontSet *">
+			<arg name="config" type="FcConfig *" />
+			<arg name="set" type="FcSetName" />
+		</method>
+		<method name="FcConfigAcceptFont" result="FcBool">
+			<arg name="config" type="FcConfig *" />
+			<arg name="font" type="const FcPattern *" />
+		</method>
+		<method name="FcConfigAppFontAddFile" result="FcBool">
+			<arg name="config" type="FcConfig *" />
+			<arg name="file" type="const FcChar8 *" />
+		</method>
+		<method name="FcConfigAppFontAddDir" result="FcBool">
+			<arg name="config" type="FcConfig *" />
+			<arg name="dir" type="const FcChar8 *" />
+		</method>
+		<method name="FcConfigAppFontClear" result="void">
+			<arg name="config" type="FcConfig *" />
+		</method>
+		<method name="FcConfigSubstituteWithPat" result="FcBool">
+			<arg name="config" type="FcConfig *" />
+			<arg name="p" type="FcPattern *" />
+			<arg name="p_pat" type="FcPattern *" />
+			<arg name="kind" type="FcMatchKind" />
+		</method>
+		<method name="FcConfigSubstitute" result="FcBool">
+			<arg name="config" type="FcConfig *" />
+			<arg name="p" type="FcPattern *" />
+			<arg name="kind" type="FcMatchKind" />
+		</method>
+		<method name="FcConfigGetSysRoot" result="const FcChar8 *">
+			<arg name="config" type="const FcConfig *" />
+		</method>
+		<method name="FcConfigSetSysRoot" result="void">
+			<arg name="config" type="FcConfig *" />
+			<arg name="sysroot" type="const FcChar8 *" />
+		</method>
+		<method name="FcConfigFileInfoIterInit" result="void">
+			<arg name="config" type="FcConfig *" />
+			<arg name="iter" type="FcConfigFileInfoIter *" />
+		</method>
+		<method name="FcConfigFileInfoIterNext" result="FcBool">
+			<arg name="config" type="FcConfig *" />
+			<arg name="iter" type="FcConfigFileInfoIter *" />
+		</method>
+		<method name="FcConfigFileInfoIterGet" result="FcBool">
+			<arg name="config" type="FcConfig *" />
+			<arg name="iter" type="FcConfigFileInfoIter *" />
+			<arg name="*name" type="FcChar8 *" />
+			<arg name="*description" type="FcChar8 *" />
+			<arg name="enabled" type="FcBool *" />
+		</method>
+		<method name="FcCharSetCreate" result="FcCharSet*" />
+		<method name="FcCharSetNew" result="FcCharSet *" />
+		<method name="FcCharSetDestroy" result="void">
+			<arg name="fcs" type="FcCharSet *" />
+		</method>
+		<method name="FcCharSetAddChar" result="FcBool">
+			<arg name="fcs" type="FcCharSet *" />
+			<arg name="ucs4" type="FcChar32" />
+		</method>
+		<method name="FcCharSetDelChar" result="FcBool">
+			<arg name="fcs" type="FcCharSet *" />
+			<arg name="ucs4" type="FcChar32" />
+		</method>
+		<method name="FcCharSetCopy" result="FcCharSet*">
+			<arg name="src" type="FcCharSet *" />
+		</method>
+		<method name="FcCharSetEqual" result="FcBool">
+			<arg name="a" type="const FcCharSet *" />
+			<arg name="b" type="const FcCharSet *" />
+		</method>
+		<method name="FcCharSetIntersect" result="FcCharSet*">
+			<arg name="a" type="const FcCharSet *" />
+			<arg name="b" type="const FcCharSet *" />
+		</method>
+		<method name="FcCharSetUnion" result="FcCharSet*">
+			<arg name="a" type="const FcCharSet *" />
+			<arg name="b" type="const FcCharSet *" />
+		</method>
+		<method name="FcCharSetSubtract" result="FcCharSet*">
+			<arg name="a" type="const FcCharSet *" />
+			<arg name="b" type="const FcCharSet *" />
+		</method>
+		<method name="FcCharSetMerge" result="FcBool">
+			<arg name="a" type="FcCharSet *" />
+			<arg name="b" type="const FcCharSet *" />
+			<arg name="changed" type="FcBool *" />
+		</method>
+		<method name="FcCharSetHasChar" result="FcBool">
+			<arg name="fcs" type="const FcCharSet *" />
+			<arg name="ucs4" type="FcChar32" />
+		</method>
+		<method name="FcCharSetCount" result="FcChar32">
+			<arg name="a" type="const FcCharSet *" />
+		</method>
+		<method name="FcCharSetIntersectCount" result="FcChar32">
+			<arg name="a" type="const FcCharSet *" />
+			<arg name="b" type="const FcCharSet *" />
+		</method>
+		<method name="FcCharSetSubtractCount" result="FcChar32">
+			<arg name="a" type="const FcCharSet *" />
+			<arg name="b" type="const FcCharSet *" />
+		</method>
+		<method name="FcCharSetIsSubset" result="FcBool">
+			<arg name="a" type="const FcCharSet *" />
+			<arg name="b" type="const FcCharSet *" />
+		</method>
+		<method name="FcCharSetFirstPage" result="FcChar32">
+			<arg name="a" type="const FcCharSet *" />
+			<arg name="map[FC_CHARSET_MAP_SIZE]" type="FcChar32" />
+			<arg name="next" type="FcChar32 *" />
+		</method>
+		<method name="FcCharSetNextPage" result="FcChar32">
+			<arg name="a" type="const FcCharSet *" />
+			<arg name="map[FC_CHARSET_MAP_SIZE]" type="FcChar32" />
+			<arg name="next" type="FcChar32 *" />
+		</method>
+		<method name="FcCharSetCoverage" result="FcChar32">
+			<arg name="a" type="const FcCharSet *" />
+			<arg name="page" type="FcChar32" />
+			<arg name="result" type="FcChar32 *" />
+		</method>
+		<method name="FcValuePrint" result="void">
+			<arg name="v" type="const FcValue" />
+		</method>
+		<method name="FcPatternPrint" result="void">
+			<arg name="p" type="const FcPattern *" />
+		</method>
+		<method name="FcFontSetPrint" result="void">
+			<arg name="s" type="const FcFontSet *" />
+		</method>
+		<method name="FcGetDefaultLangs" result="FcStrSet *" />
+		<method name="FcDefaultSubstitute" result="void">
+			<arg name="pattern" type="FcPattern *" />
+		</method>
+		<method name="FcFileIsDir" result="FcBool">
+			<arg name="file" type="const FcChar8 *" />
+		</method>
+		<method name="FcFileScan" result="FcBool">
+			<arg name="set" type="FcFontSet *" />
+			<arg name="dirs" type="FcStrSet *" />
+			<arg name="cache" type="FcFileCache *" />
+			<arg name="blanks" type="FcBlanks *" />
+			<arg name="file" type="const FcChar8 *" />
+			<arg name="force" type="FcBool" />
+		</method>
+		<method name="FcDirScan" result="FcBool">
+			<arg name="set" type="FcFontSet *" />
+			<arg name="dirs" type="FcStrSet *" />
+			<arg name="cache" type="FcFileCache *" />
+			<arg name="blanks" type="FcBlanks *" />
+			<arg name="dir" type="const FcChar8 *" />
+			<arg name="force" type="FcBool" />
+		</method>
+		<method name="FcDirSave" result="FcBool">
+			<arg name="set" type="FcFontSet *" />
+			<arg name="dirs" type="FcStrSet *" />
+			<arg name="dir" type="const FcChar8 *" />
+		</method>
+		<method name="FcDirCacheLoad" result="FcCache *">
+			<arg name="dir" type="const FcChar8 *" />
+			<arg name="config" type="FcConfig *" />
+			<arg name="*cache_file" type="FcChar8 *" />
+		</method>
+		<method name="FcDirCacheRescan" result="FcCache *">
+			<arg name="dir" type="const FcChar8 *" />
+			<arg name="config" type="FcConfig *" />
+		</method>
+		<method name="FcDirCacheRead" result="FcCache *">
+			<arg name="dir" type="const FcChar8 *" />
+			<arg name="force" type="FcBool" />
+			<arg name="config" type="FcConfig *" />
+		</method>
+		<method name="FcDirCacheLoadFile" result="FcCache *">
+			<arg name="cache_file" type="const FcChar8 *" />
+			<arg name="file_stat" type="struct stat *" />
+		</method>
+		<method name="FcDirCacheUnload" result="void">
+			<arg name="cache" type="FcCache *" />
+		</method>
+		<method name="FcFreeTypeQuery" result="FcPattern *">
+			<arg name="file" type="const FcChar8 *" />
+			<arg name="id" type="unsigned int" />
+			<arg name="blanks" type="FcBlanks *" />
+			<arg name="count" type="int *" />
+		</method>
+		<method name="FcFreeTypeQueryAll" result="unsigned int">
+			<arg name="file" type="const FcChar8 *" />
+			<arg name="id" type="unsigned int" />
+			<arg name="blanks" type="FcBlanks *" />
+			<arg name="count" type="int *" />
+			<arg name="set" type="FcFontSet *" />
+		</method>
+		<method name="FcFontSetCreate" result="FcFontSet *" />
+		<method name="FcFontSetDestroy" result="void">
+			<arg name="s" type="FcFontSet *" />
+		</method>
+		<method name="FcFontSetAdd" result="FcBool">
+			<arg name="s" type="FcFontSet *" />
+			<arg name="font" type="FcPattern *" />
+		</method>
+		<method name="FcInitLoadConfig" result="FcConfig *" />
+		<method name="FcInitLoadConfigAndFonts" result="FcConfig *" />
+		<method name="FcInit" result="FcBool" />
+		<method name="FcFini" result="void" />
+		<method name="FcGetVersion" result="int" />
+		<method name="FcInitReinitialize" result="FcBool" />
+		<method name="FcInitBringUptoDate" result="FcBool" />
+		<method name="FcGetLangs" result="FcStrSet *" />
+		<method name="FcLangNormalize" result="FcChar8 *">
+			<arg name="lang" type="const FcChar8 *" />
+		</method>
+		<method name="FcLangGetCharSet" result="const FcCharSet *">
+			<arg name="lang" type="const FcChar8 *" />
+		</method>
+		<method name="FcLangSetCreate" result="FcLangSet*" />
+		<method name="FcLangSetDestroy" result="void">
+			<arg name="ls" type="FcLangSet *" />
+		</method>
+		<method name="FcLangSetCopy" result="FcLangSet*">
+			<arg name="ls" type="const FcLangSet *" />
+		</method>
+		<method name="FcLangSetAdd" result="FcBool">
+			<arg name="ls" type="FcLangSet *" />
+			<arg name="lang" type="const FcChar8 *" />
+		</method>
+		<method name="FcLangSetDel" result="FcBool">
+			<arg name="ls" type="FcLangSet *" />
+			<arg name="lang" type="const FcChar8 *" />
+		</method>
+		<method name="FcLangSetHasLang" result="FcLangResult">
+			<arg name="ls" type="const FcLangSet *" />
+			<arg name="lang" type="const FcChar8 *" />
+		</method>
+		<method name="FcLangSetCompare" result="FcLangResult">
+			<arg name="lsa" type="const FcLangSet *" />
+			<arg name="lsb" type="const FcLangSet *" />
+		</method>
+		<method name="FcLangSetContains" result="FcBool">
+			<arg name="lsa" type="const FcLangSet *" />
+			<arg name="lsb" type="const FcLangSet *" />
+		</method>
+		<method name="FcLangSetEqual" result="FcBool">
+			<arg name="lsa" type="const FcLangSet *" />
+			<arg name="lsb" type="const FcLangSet *" />
+		</method>
+		<method name="FcLangSetHash" result="FcChar32">
+			<arg name="ls" type="const FcLangSet *" />
+		</method>
+		<method name="FcLangSetGetLangs" result="FcStrSet *">
+			<arg name="ls" type="const FcLangSet *" />
+		</method>
+		<method name="FcLangSetUnion" result="FcLangSet *">
+			<arg name="a" type="const FcLangSet *" />
+			<arg name="b" type="const FcLangSet *" />
+		</method>
+		<method name="FcLangSetSubtract" result="FcLangSet *">
+			<arg name="a" type="const FcLangSet *" />
+			<arg name="b" type="const FcLangSet *" />
+		</method>
+		<method name="FcObjectSetCreate" result="FcObjectSet *" />
+		<method name="FcObjectSetAdd" result="FcBool">
+			<arg name="os" type="FcObjectSet *" />
+			<arg name="object" type="const char *" />
+		</method>
+		<method name="FcObjectSetDestroy" result="void">
+			<arg name="os" type="FcObjectSet *" />
+		</method>
+		<method name="FcObjectSetVaBuild" result="FcObjectSet *">
+			<arg name="first" type="const char *" />
+			<arg name="va" type="va_list" />
+		</method>
+		<method name="FcObjectSetBuild" result="FcObjectSet *">
+			<arg name="first" type="const char *" />
+			<arg name="FC_ATTRIBUTE_SENTINEL0" type="..." />
+		</method>
+		<method name="FcFontSetList" result="FcFontSet *">
+			<arg name="config" type="FcConfig *" />
+			<arg name="*sets" type="FcFontSet *" />
+			<arg name="nsets" type="int" />
+			<arg name="p" type="FcPattern *" />
+			<arg name="os" type="FcObjectSet *" />
+		</method>
+		<method name="FcFontList" result="FcFontSet *">
+			<arg name="config" type="FcConfig *" />
+			<arg name="p" type="FcPattern *" />
+			<arg name="os" type="FcObjectSet *" />
+		</method>
+		<method name="FcAtomicCreate" result="FcAtomic *">
+			<arg name="file" type="const FcChar8 *" />
+		</method>
+		<method name="FcAtomicLock" result="FcBool">
+			<arg name="atomic" type="FcAtomic *" />
+		</method>
+		<method name="FcAtomicNewFile" result="FcChar8 *">
+			<arg name="atomic" type="FcAtomic *" />
+		</method>
+		<method name="FcAtomicOrigFile" result="FcChar8 *">
+			<arg name="atomic" type="FcAtomic *" />
+		</method>
+		<method name="FcAtomicReplaceOrig" result="FcBool">
+			<arg name="atomic" type="FcAtomic *" />
+		</method>
+		<method name="FcAtomicDeleteNew" result="void">
+			<arg name="atomic" type="FcAtomic *" />
+		</method>
+		<method name="FcAtomicUnlock" result="void">
+			<arg name="atomic" type="FcAtomic *" />
+		</method>
+		<method name="FcAtomicDestroy" result="void">
+			<arg name="atomic" type="FcAtomic *" />
+		</method>
+		<method name="FcFontSetMatch" result="FcPattern *">
+			<arg name="config" type="FcConfig *" />
+			<arg name="*sets" type="FcFontSet *" />
+			<arg name="nsets" type="int" />
+			<arg name="p" type="FcPattern *" />
+			<arg name="result" type="FcResult *" />
+		</method>
+		<method name="FcFontMatch" result="FcPattern *">
+			<arg name="config" type="FcConfig *" />
+			<arg name="p" type="FcPattern *" />
+			<arg name="result" type="FcResult *" />
+		</method>
+		<method name="FcFontRenderPrepare" result="FcPattern *">
+			<arg name="config" type="FcConfig *" />
+			<arg name="pat" type="FcPattern *" />
+			<arg name="font" type="FcPattern *" />
+		</method>
+		<method name="FcFontSetSort" result="FcFontSet *">
+			<arg name="config" type="FcConfig *" />
+			<arg name="*sets" type="FcFontSet *" />
+			<arg name="nsets" type="int" />
+			<arg name="p" type="FcPattern *" />
+			<arg name="trim" type="FcBool" />
+			<arg name="*csp" type="FcCharSet *" />
+			<arg name="result" type="FcResult *" />
+		</method>
+		<method name="FcFontSort" result="FcFontSet *">
+			<arg name="config" type="FcConfig *" />
+			<arg name="p" type="FcPattern *" />
+			<arg name="trim" type="FcBool" />
+			<arg name="*csp" type="FcCharSet *" />
+			<arg name="result" type="FcResult *" />
+		</method>
+		<method name="FcFontSetSortDestroy" result="void">
+			<arg name="fs" type="FcFontSet *" />
+		</method>
+		<method name="FcMatrixCopy" result="FcMatrix *">
+			<arg name="mat" type="const FcMatrix *" />
+		</method>
+		<method name="FcMatrixEqual" result="FcBool">
+			<arg name="mat1" type="const FcMatrix *" />
+			<arg name="mat2" type="const FcMatrix *" />
+		</method>
+		<method name="FcMatrixMultiply" result="void">
+			<arg name="result" type="FcMatrix *" />
+			<arg name="a" type="const FcMatrix *" />
+			<arg name="b" type="const FcMatrix *" />
+		</method>
+		<method name="FcMatrixRotate" result="void">
+			<arg name="m" type="FcMatrix *" />
+			<arg name="c" type="double" />
+			<arg name="s" type="double" />
+		</method>
+		<method name="FcMatrixScale" result="void">
+			<arg name="m" type="FcMatrix *" />
+			<arg name="sx" type="double" />
+			<arg name="sy" type="double" />
+		</method>
+		<method name="FcMatrixShear" result="void">
+			<arg name="m" type="FcMatrix *" />
+			<arg name="sh" type="double" />
+			<arg name="sv" type="double" />
+		</method>
+		<method name="FcNameRegisterObjectTypes" result="FcBool">
+			<arg name="types" type="const FcObjectType *" />
+			<arg name="ntype" type="int" />
+		</method>
+		<method name="FcNameUnregisterObjectTypes" result="FcBool">
+			<arg name="types" type="const FcObjectType *" />
+			<arg name="ntype" type="int" />
+		</method>
+		<method name="FcNameGetObjectType" result="const FcObjectType *">
+			<arg name="object" type="const char *" />
+		</method>
+		<method name="FcNameRegisterConstants" result="FcBool">
+			<arg name="consts" type="const FcConstant *" />
+			<arg name="nconsts" type="int" />
+		</method>
+		<method name="FcNameUnregisterConstants" result="FcBool">
+			<arg name="consts" type="const FcConstant *" />
+			<arg name="nconsts" type="int" />
+		</method>
+		<method name="FcNameGetConstant" result="const FcConstant *">
+			<arg name="string" type="const FcChar8 *" />
+		</method>
+		<method name="FcNameGetConstantFor" result="const FcConstant *">
+			<arg name="string" type="const FcChar8 *" />
+			<arg name="object" type="const char *" />
+		</method>
+		<method name="FcNameConstant" result="FcBool">
+			<arg name="string" type="const FcChar8 *" />
+			<arg name="result" type="int *" />
+		</method>
+		<method name="FcNameParse" result="FcPattern *">
+			<arg name="name" type="const FcChar8 *" />
+		</method>
+		<method name="FcNameUnparse" result="FcChar8 *">
+			<arg name="pat" type="FcPattern *" />
+		</method>
+		<method name="FcPatternCreate" result="FcPattern *" />
+		<method name="FcPatternDuplicate" result="FcPattern *">
+			<arg name="p" type="const FcPattern *" />
+		</method>
+		<method name="FcPatternReference" result="void">
+			<arg name="p" type="FcPattern *" />
+		</method>
+		<method name="FcPatternFilter" result="FcPattern *">
+			<arg name="p" type="FcPattern *" />
+			<arg name="os" type="const FcObjectSet *" />
+		</method>
+		<method name="FcValueDestroy" result="void">
+			<arg name="v" type="FcValue" />
+		</method>
+		<method name="FcValueEqual" result="FcBool">
+			<arg name="va" type="FcValue" />
+			<arg name="vb" type="FcValue" />
+		</method>
+		<method name="FcValueSave" result="FcValue">
+			<arg name="v" type="FcValue" />
+		</method>
+		<method name="FcPatternDestroy" result="void">
+			<arg name="p" type="FcPattern *" />
+		</method>
+		<method name="FcPatternEqual" result="FcBool">
+			<arg name="pa" type="const FcPattern *" />
+			<arg name="pb" type="const FcPattern *" />
+		</method>
+		<method name="FcPatternEqualSubset" result="FcBool">
+			<arg name="pa" type="const FcPattern *" />
+			<arg name="pb" type="const FcPattern *" />
+			<arg name="os" type="const FcObjectSet *" />
+		</method>
+		<method name="FcPatternHash" result="FcChar32">
+			<arg name="p" type="const FcPattern *" />
+		</method>
+		<method name="FcPatternAdd" result="FcBool">
+			<arg name="p" type="FcPattern *" />
+			<arg name="object" type="const char *" />
+			<arg name="value" type="FcValue" />
+			<arg name="append" type="FcBool" />
+		</method>
+		<method name="FcPatternAddWeak" result="FcBool">
+			<arg name="p" type="FcPattern *" />
+			<arg name="object" type="const char *" />
+			<arg name="value" type="FcValue" />
+			<arg name="append" type="FcBool" />
+		</method>
+		<method name="FcPatternGet" result="FcResult">
+			<arg name="p" type="const FcPattern *" />
+			<arg name="object" type="const char *" />
+			<arg name="id" type="int" />
+			<arg name="v" type="FcValue *" />
+		</method>
+		<method name="FcPatternGetWithBinding" result="FcResult">
+			<arg name="p" type="const FcPattern *" />
+			<arg name="object" type="const char *" />
+			<arg name="id" type="int" />
+			<arg name="v" type="FcValue *" />
+			<arg name="b" type="FcValueBinding *" />
+		</method>
+		<method name="FcPatternDel" result="FcBool">
+			<arg name="p" type="FcPattern *" />
+			<arg name="object" type="const char *" />
+		</method>
+		<method name="FcPatternRemove" result="FcBool">
+			<arg name="p" type="FcPattern *" />
+			<arg name="object" type="const char *" />
+			<arg name="id" type="int" />
+		</method>
+		<method name="FcPatternAddInteger" result="FcBool">
+			<arg name="p" type="FcPattern *" />
+			<arg name="object" type="const char *" />
+			<arg name="i" type="int" />
+		</method>
+		<method name="FcPatternAddDouble" result="FcBool">
+			<arg name="p" type="FcPattern *" />
+			<arg name="object" type="const char *" />
+			<arg name="d" type="double" />
+		</method>
+		<method name="FcPatternAddString" result="FcBool">
+			<arg name="p" type="FcPattern *" />
+			<arg name="object" type="const char *" />
+			<arg name="s" type="const FcChar8 *" />
+		</method>
+		<method name="FcPatternAddMatrix" result="FcBool">
+			<arg name="p" type="FcPattern *" />
+			<arg name="object" type="const char *" />
+			<arg name="s" type="const FcMatrix *" />
+		</method>
+		<method name="FcPatternAddCharSet" result="FcBool">
+			<arg name="p" type="FcPattern *" />
+			<arg name="object" type="const char *" />
+			<arg name="c" type="const FcCharSet *" />
+		</method>
+		<method name="FcPatternAddBool" result="FcBool">
+			<arg name="p" type="FcPattern *" />
+			<arg name="object" type="const char *" />
+			<arg name="b" type="FcBool" />
+		</method>
+		<method name="FcPatternAddLangSet" result="FcBool">
+			<arg name="p" type="FcPattern *" />
+			<arg name="object" type="const char *" />
+			<arg name="ls" type="const FcLangSet *" />
+		</method>
+		<method name="FcPatternAddRange" result="FcBool">
+			<arg name="p" type="FcPattern *" />
+			<arg name="object" type="const char *" />
+			<arg name="r" type="const FcRange *" />
+		</method>
+		<method name="FcPatternGetInteger" result="FcResult">
+			<arg name="p" type="const FcPattern *" />
+			<arg name="object" type="const char *" />
+			<arg name="n" type="int" />
+			<arg name="i" type="int *" />
+		</method>
+		<method name="FcPatternGetDouble" result="FcResult">
+			<arg name="p" type="const FcPattern *" />
+			<arg name="object" type="const char *" />
+			<arg name="n" type="int" />
+			<arg name="d" type="double *" />
+		</method>
+		<method name="FcPatternGetString" result="FcResult">
+			<arg name="p" type="const FcPattern *" />
+			<arg name="object" type="const char *" />
+			<arg name="n" type="int" />
+			<arg name="s" type="FcChar8 **" />
+		</method>
+		<method name="FcPatternGetMatrix" result="FcResult">
+			<arg name="p" type="const FcPattern *" />
+			<arg name="object" type="const char *" />
+			<arg name="n" type="int" />
+			<arg name="*s" type="FcMatrix *" />
+		</method>
+		<method name="FcPatternGetCharSet" result="FcResult">
+			<arg name="p" type="const FcPattern *" />
+			<arg name="object" type="const char *" />
+			<arg name="n" type="int" />
+			<arg name="*c" type="FcCharSet *" />
+		</method>
+		<method name="FcPatternGetBool" result="FcResult">
+			<arg name="p" type="const FcPattern *" />
+			<arg name="object" type="const char *" />
+			<arg name="n" type="int" />
+			<arg name="b" type="FcBool *" />
+		</method>
+		<method name="FcPatternGetLangSet" result="FcResult">
+			<arg name="p" type="const FcPattern *" />
+			<arg name="object" type="const char *" />
+			<arg name="n" type="int" />
+			<arg name="*ls" type="FcLangSet *" />
+		</method>
+		<method name="FcPatternGetRange" result="FcResult">
+			<arg name="p" type="const FcPattern *" />
+			<arg name="object" type="const char *" />
+			<arg name="id" type="int" />
+			<arg name="*r" type="FcRange *" />
+		</method>
+		<method name="FcPatternVaBuild" result="FcPattern *">
+			<arg name="p" type="FcPattern *" />
+			<arg name="va" type="va_list" />
+		</method>
+		<method name="FcPatternBuild" result="FcPattern *">
+			<arg name="p" type="FcPattern *" />
+			<arg name="FC_ATTRIBUTE_SENTINEL0" type="..." />
+		</method>
+		<method name="FcPatternFormat" result="FcChar8 *">
+			<arg name="pat" type="FcPattern *" />
+			<arg name="format" type="const FcChar8 *" />
+		</method>
+		<method name="FcRangeCreateDouble" result="FcRange *">
+			<arg name="begin" type="double" />
+			<arg name="end" type="double" />
+		</method>
+		<method name="FcRangeCreateInteger" result="FcRange *">
+			<arg name="begin" type="FcChar32" />
+			<arg name="end" type="FcChar32" />
+		</method>
+		<method name="FcRangeDestroy" result="void">
+			<arg name="range" type="FcRange *" />
+		</method>
+		<method name="FcRangeCopy" result="FcRange *">
+			<arg name="r" type="const FcRange *" />
+		</method>
+		<method name="FcRangeGetDouble" result="FcBool">
+			<arg name="range" type="const FcRange *" />
+			<arg name="begin" type="double *" />
+			<arg name="end" type="double *" />
+		</method>
+		<method name="FcPatternIterStart" result="void">
+			<arg name="pat" type="const FcPattern *" />
+			<arg name="iter" type="FcPatternIter *" />
+		</method>
+		<method name="FcPatternIterNext" result="FcBool">
+			<arg name="pat" type="const FcPattern *" />
+			<arg name="iter" type="FcPatternIter *" />
+		</method>
+		<method name="FcPatternIterEqual" result="FcBool">
+			<arg name="p1" type="const FcPattern *" />
+			<arg name="i1" type="FcPatternIter *" />
+			<arg name="p2" type="const FcPattern *" />
+			<arg name="i2" type="FcPatternIter *" />
+		</method>
+		<method name="FcPatternFindIter" result="FcBool">
+			<arg name="pat" type="const FcPattern *" />
+			<arg name="iter" type="FcPatternIter *" />
+			<arg name="object" type="const char *" />
+		</method>
+		<method name="FcPatternIterIsValid" result="FcBool">
+			<arg name="pat" type="const FcPattern *" />
+			<arg name="iter" type="FcPatternIter *" />
+		</method>
+		<method name="FcPatternIterGetObject" result="const char *">
+			<arg name="pat" type="const FcPattern *" />
+			<arg name="iter" type="FcPatternIter *" />
+		</method>
+		<method name="FcPatternIterValueCount" result="int">
+			<arg name="pat" type="const FcPattern *" />
+			<arg name="iter" type="FcPatternIter *" />
+		</method>
+		<method name="FcPatternIterGetValue" result="FcResult">
+			<arg name="pat" type="const FcPattern *" />
+			<arg name="iter" type="FcPatternIter *" />
+			<arg name="id" type="int" />
+			<arg name="v" type="FcValue *" />
+			<arg name="b" type="FcValueBinding *" />
+		</method>
+		<method name="FcWeightFromOpenType" result="int">
+			<arg name="ot_weight" type="int" />
+		</method>
+		<method name="FcWeightFromOpenTypeDouble" result="double">
+			<arg name="ot_weight" type="double" />
+		</method>
+		<method name="FcWeightToOpenType" result="int">
+			<arg name="fc_weight" type="int" />
+		</method>
+		<method name="FcWeightToOpenTypeDouble" result="double">
+			<arg name="fc_weight" type="double" />
+		</method>
+		<method name="FcStrCopy" result="FcChar8 *">
+			<arg name="s" type="const FcChar8 *" />
+		</method>
+		<method name="FcStrCopyFilename" result="FcChar8 *">
+			<arg name="s" type="const FcChar8 *" />
+		</method>
+		<method name="FcStrPlus" result="FcChar8 *">
+			<arg name="s1" type="const FcChar8 *" />
+			<arg name="s2" type="const FcChar8 *" />
+		</method>
+		<method name="FcStrFree" result="void">
+			<arg name="s" type="FcChar8 *" />
+		</method>
+		<method name="FcStrDowncase" result="FcChar8 *">
+			<arg name="s" type="const FcChar8 *" />
+		</method>
+		<method name="FcStrCmpIgnoreCase" result="int">
+			<arg name="s1" type="const FcChar8 *" />
+			<arg name="s2" type="const FcChar8 *" />
+		</method>
+		<method name="FcStrCmp" result="int">
+			<arg name="s1" type="const FcChar8 *" />
+			<arg name="s2" type="const FcChar8 *" />
+		</method>
+		<method name="FcStrStrIgnoreCase" result="const FcChar8 *">
+			<arg name="s1" type="const FcChar8 *" />
+			<arg name="s2" type="const FcChar8 *" />
+		</method>
+		<method name="FcStrStr" result="const FcChar8 *">
+			<arg name="s1" type="const FcChar8 *" />
+			<arg name="s2" type="const FcChar8 *" />
+		</method>
+		<method name="FcUtf8ToUcs4" result="int">
+			<arg name="src_orig" type="const FcChar8 *" />
+			<arg name="dst" type="FcChar32 *" />
+			<arg name="len" type="int" />
+		</method>
+		<method name="FcUtf8Len" result="FcBool">
+			<arg name="string" type="const FcChar8 *" />
+			<arg name="len" type="int" />
+			<arg name="nchar" type="int *" />
+			<arg name="wchar" type="int *" />
+		</method>
+		<method name="FcUcs4ToUtf8" result="int">
+			<arg name="ucs4" type="FcChar32" />
+			<arg name="dest[FC_UTF8_MAX_LEN]" type="FcChar8" />
+		</method>
+		<method name="FcUtf16ToUcs4" result="int">
+			<arg name="src_orig" type="const FcChar8 *" />
+			<arg name="endian" type="FcEndian" />
+			<arg name="dst" type="FcChar32 *" />
+			<arg name="len" type="int" />
+		</method>
+		<method name="FcUtf16Len" result="FcBool">
+			<arg name="string" type="const FcChar8 *" />
+			<arg name="endian" type="FcEndian" />
+			<arg name="len" type="int" />
+			<arg name="nchar" type="int *" />
+			<arg name="wchar" type="int *" />
+		</method>
+		<method name="FcStrBuildFilename" result="FcChar8 *">
+			<arg name="path" type="const FcChar8 *" />
+			<arg name="" type="..." />
+		</method>
+		<method name="FcStrDirname" result="FcChar8 *">
+			<arg name="file" type="const FcChar8 *" />
+		</method>
+		<method name="FcStrBasename" result="FcChar8 *">
+			<arg name="file" type="const FcChar8 *" />
+		</method>
+		<method name="FcStrSetCreate" result="FcStrSet *" />
+		<method name="FcStrSetMember" result="FcBool">
+			<arg name="set" type="FcStrSet *" />
+			<arg name="s" type="const FcChar8 *" />
+		</method>
+		<method name="FcStrSetEqual" result="FcBool">
+			<arg name="sa" type="FcStrSet *" />
+			<arg name="sb" type="FcStrSet *" />
+		</method>
+		<method name="FcStrSetAdd" result="FcBool">
+			<arg name="set" type="FcStrSet *" />
+			<arg name="s" type="const FcChar8 *" />
+		</method>
+		<method name="FcStrSetAddFilename" result="FcBool">
+			<arg name="set" type="FcStrSet *" />
+			<arg name="s" type="const FcChar8 *" />
+		</method>
+		<method name="FcStrSetDel" result="FcBool">
+			<arg name="set" type="FcStrSet *" />
+			<arg name="s" type="const FcChar8 *" />
+		</method>
+		<method name="FcStrSetDestroy" result="void">
+			<arg name="set" type="FcStrSet *" />
+		</method>
+		<method name="FcStrListCreate" result="FcStrList *">
+			<arg name="set" type="FcStrSet *" />
+		</method>
+		<method name="FcStrListFirst" result="void">
+			<arg name="list" type="FcStrList *" />
+		</method>
+		<method name="FcStrListNext" result="FcChar8 *">
+			<arg name="list" type="FcStrList *" />
+		</method>
+		<method name="FcStrListDone" result="void">
+			<arg name="list" type="FcStrList *" />
+		</method>
+		<method name="FcConfigParseAndLoad" result="FcBool">
+			<arg name="config" type="FcConfig *" />
+			<arg name="file" type="const FcChar8 *" />
+			<arg name="complain" type="FcBool" />
+		</method>
+		<method name="FcConfigParseAndLoadFromMemory" result="FcBool">
+			<arg name="config" type="FcConfig *" />
+			<arg name="buffer" type="const FcChar8 *" />
+			<arg name="complain" type="FcBool" />
+		</method>
+
+
+    </interface>
+ </library>

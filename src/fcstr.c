@@ -951,6 +951,8 @@ FcStrIsAbsoluteFilename (const FcChar8 *s)
     if (*s == '\\' ||
 	(isalpha (*s) && s[1] == ':' && (s[2] == '/' || s[2] == '\\')))
 	return FcTrue;
+#elif defined(__amigaos4__)
+    return strchr(s, ':');
 #endif
     return *s == '/';
 }

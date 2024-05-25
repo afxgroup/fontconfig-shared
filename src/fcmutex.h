@@ -56,6 +56,16 @@ typedef CRITICAL_SECTION fc_mutex_impl_t;
 #define fc_mutex_impl_unlock(M)	LeaveCriticalSection (M)
 #define fc_mutex_impl_finish(M)	DeleteCriticalSection (M)
 
+#elif defined(__amigaos4__) /************************************************/
+
+#include <proto/exec.h>
+
+typedef APTR fc_mutex_impl_t;
+
+# define fc_mutex_impl_lock(mutex) IExec->MutexObtain((mutex))
+# define fc_mutex_impl_unlock(mutex) IExec->MutexRelease((mutex))
+# define fc_mutex_impl_init(mutex) ((mutex) = IExec->AllocSysObject(ASOT_MUTEX, NULL))
+# define fc_mutex_impl_finish(mutex) IExec->FreeSysObject(ASOT_MUTEX, (mutex))
 
 #elif !defined(FC_NO_MT) && (defined(HAVE_PTHREAD) || defined(__APPLE__))
 
