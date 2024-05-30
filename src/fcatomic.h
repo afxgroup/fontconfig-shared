@@ -36,7 +36,6 @@
 #include <config.h>
 #endif
 
-
 /* atomic_int */
 
 /* We need external help for these */

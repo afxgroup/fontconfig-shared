@@ -26,6 +26,10 @@
 #include <limits.h>
 #include <string.h>
 
+#ifdef __amigaos4__
+extern struct DOSIFace *IDOS;
+#endif
+
 /* MT-safe */
 
 static const struct {
@@ -44,7 +48,12 @@ static const struct {
 
 #define NUM_FC_BOOL_DEFAULTS	(int) (sizeof FcBoolDefaults / sizeof FcBoolDefaults[0])
 
+#ifndef __amigaos4__
 FcStrSet *default_langs;
+#else
+#include "../amiga_shared/init.h"
+#define default_langs fontconfigBase->default_langs
+#endif
 
 FcStrSet *
 FcGetDefaultLangs (void)
@@ -160,7 +169,7 @@ retry:
 #else
 # if defined (HAVE_GETEXECNAME)
 	char *p = FcStrdup(getexecname ());
-# elif defined (HAVE_READLINK)
+# elif defined (HAVE_READLINK) && !defined(__amigaos4__)
 	size_t size = FC_PATH_MAX;
 	char *p = NULL;
 
@@ -188,6 +197,11 @@ retry:
 	    free (buf);
 	    size *= 2;
 	}
+# elif defined(__amigaos4__)	
+	char *buf = calloc(1, 256);
+	char *p = NULL;
+	if (IDOS->GetCliProgramName(buf, 255))
+		p = buf;
 # else
 	char *p = NULL;
 # endif

@@ -20,18 +20,18 @@ CP	   = cp
 MKDIR  = mkdir -p
 
 # Change these as required
-OPTIMIZE = -O2
+OPTIMIZE = -O2 -fomit-frame-pointer
 DEBUG    = -gstabs # -DDEBUG
 CFLAGS   = -I. -Iinclude -I../fontconfig -I/usr/ppc-amigaos/SDK/local/common/include/freetype2 -I../lib/ -Wall $(AMIGA_CFLAGS) $(OPTIMIZE) $(DEBUG)
 
 # Flags passed to gcc during linking
-LINK = -gstabs -L../lib/.libs -Wl,--no-undefined
+LINK = -static -gstabs -L../lib/.libs -Wl,--no-undefined
 
 # Name of the "thing" to build
 TARGET = fontconfig.library
 
 # Additional linker libraries
-LIBS = ../src/.libs/libfontconfig.a -lexpat -lfreetype -lpthread
+LIBS = ../src/.libs/libfontconfig.a 
 
 # Version of the library to build
 VERSION = 54
@@ -58,9 +58,9 @@ libfontconfig.a: $(LINKOBJS)
 
 compilelib:
 	$(RM) $(TARGET) $(TARGET).debug*
-ifeq (,$(wildcard ../lib/.libs/libfontconfig.a))
+ifeq (,$(wildcard ../s/.libs/libfontconfig.a))
 ifeq (,$(wildcard ../configure))
-	cd ..; PKG_CONFIG_PATH=/SDK/local/newlib/lib/pkgconfig ./configure --prefix=$(shell pwd)/SDK --host=ppc-amigaos --exec-prefix=/usr/ppc-amigaos/SDK/local/newlib --disable-shared --enable-static --disable-dependency-tracking --with-default-fonts="Fonts:_TrueType" --with-cache-dir="PROGDIR:fontconfig/cache" --with-templatedir="PROGDIR:fontconfig/conf.avail" --with-baseconfigdir="PROGDIR:fontconfig"  --disable-docs --disable-docbook; cd amiga_shared;
+	cd ..; PKG_CONFIG_PATH=/SDK/local/newlib/lib/pkgconfig ./configure --prefix=$(shell pwd)/SDK --host=ppc-amigaos --exec-prefix=/usr/ppc-amigaos/SDK/local/newlib --disable-shared --enable-static --disable-dependency-tracking --with-default-fonts="Fonts:_TrueType" --with-cache-dir="PROGDIR:fontconfig/cache" CPPFLAGS="-gstabs" --with-templatedir="PROGDIR:fontconfig/conf.avail" --with-baseconfigdir="PROGDIR:fontconfig"  --disable-docs --disable-docbook; cd amiga_shared;
 endif
 	cd ..; make && make install; cd amiga_shared;
 endif

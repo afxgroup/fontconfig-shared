@@ -47,6 +47,11 @@
 #include "fcfoundry.h"
 #include "ftglue.h"
 
+#ifdef __amigaos4__
+#define __USE_INLINE__
+#include <proto/freetype.h>
+#endif
+
 /*
  * Keep Han languages separated by eliminating languages
  * that the codePageRange bits says aren't supported

@@ -209,7 +209,7 @@ FcRandom(void)
 #else
     random_r (&fcrandbuf, &result);
 #endif
-#elif HAVE_RANDOM
+#elif defined(HAVE_RANDOM) && !defined(__amigaos4__)
     static char statebuf[256];
     char *state;
     static FcBool initialized = FcFalse;

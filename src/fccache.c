@@ -53,8 +53,8 @@
 #define O_BINARY 0
 #endif
 
-#ifdef __amigaos4__
-#define	INTPTR_MAX				LONG_MAX
+#if defined(__amigaos4__) && defined(__NEWLIB__)
+#define INTPTR_MAX LONG_MAX
 #endif
 
 FcBool
@@ -116,7 +116,11 @@ bail:
     return ret;
 }
 
+#ifndef __amigaos4__
 #define CACHEBASE_LEN (1 + 36 + 1 + sizeof (FC_ARCHITECTURE) + sizeof (FC_CACHE_SUFFIX))
+#else
+#define CACHEBASE_LEN (1 + 8 + 1 + sizeof (FC_ARCHITECTURE) + sizeof (FC_CACHE_SUFFIX))
+#endif
 
 static FcBool
 FcCacheIsMmapSafe (int fd)
@@ -198,9 +202,14 @@ FcDirCacheBasenameMD5 (FcConfig *config, const FcChar8 *dir, FcChar8 cache_base[
     if (key)
 	FcStrFree (key);
 
+#ifndef __amigaos4__
     cache_base[0] = '/';
     hex_hash = cache_base + 1;
     for (cnt = 0; cnt < 16; ++cnt)
+#else
+    hex_hash = cache_base;
+    for (cnt = 0; cnt < 4; ++cnt)
+#endif
     {
 	hex_hash[2*cnt  ] = bin2hex[hash[cnt] >> 4];
 	hex_hash[2*cnt+1] = bin2hex[hash[cnt] & 0xf];
@@ -246,8 +255,12 @@ FcDirCacheBasenameUUID (FcConfig *config, const FcChar8 *dir, FcChar8 cache_base
 	close (fd);
 	if (len < 0)
 	    goto bail;
+#ifndef __amigaos4__
 	cache_base[0] = '/';
 	strcpy ((char *)&cache_base[1], suuid);
+#else
+	strcpy ((char *)&cache_base[0], suuid);
+#endif
 	strcat ((char *) cache_base, "-" FC_ARCHITECTURE FC_CACHE_SUFFIX);
 	if (FcDebug () & FC_DBG_CACHE)
 	{
@@ -482,15 +495,22 @@ struct _FcCacheSkip {
 #define FC_CACHE_MAX_LEVEL  16
 
 /* Protected by cache_lock below */
+#ifndef __amigaos4__
 static FcCacheSkip	*fcCacheChains[FC_CACHE_MAX_LEVEL];
-static int		fcCacheMaxLevel;
-
-
+static int		fcCacheMaxLevel = 0;
 static FcMutex *cache_lock;
+#else
+#include "../amiga_shared/init.h"
+#define fcCacheChains fontconfigBase->fcCacheChains
+#define fcCacheMaxLevel fontconfigBase->fcCacheMaxLevel
+#define cache_lock fontconfigBase->cache_lock
+#endif
+
 
 static void
 lock_cache (void)
 {
+#ifndef __amigaos4__    
   FcMutex *lock;
 retry:
   lock = fc_atomic_ptr_get (&cache_lock);
@@ -509,14 +529,32 @@ retry:
     return;
   }
   FcMutexLock (lock);
+#else
+    cache_lock = IExec->AllocSysObject(ASOT_MUTEX, NULL);
+    if (cache_lock) {
+        IExec->MutexObtain(cache_lock);
+        /* Initialize random state */
+        FcRandom ();
+    }
+
+    return;
+#endif  
 }
 
 static void
 unlock_cache (void)
 {
+#ifndef __amigaos4__    
   FcMutex *lock;
   lock = fc_atomic_ptr_get (&cache_lock);
   FcMutexUnlock (lock);
+#else
+  if (cache_lock) {
+    IExec->MutexRelease(cache_lock);
+    IExec->FreeSysObject(ASOT_MUTEX, cache_lock);
+    cache_lock = NULL;
+  }
+#endif  
 }
 
 static void
@@ -563,7 +601,7 @@ FcCacheInsert (FcCache *cache, struct stat *cache_stat)
     FcCacheSkip    **update[FC_CACHE_MAX_LEVEL];
     FcCacheSkip    *s, **next;
     int		    i, level;
-
+    fcCacheMaxLevel = 0;
     lock_cache ();
 
     /*
@@ -572,9 +610,9 @@ FcCacheInsert (FcCache *cache, struct stat *cache_stat)
     next = fcCacheChains;
     for (i = fcCacheMaxLevel; --i >= 0; )
     {
-	for (; (s = next[i]); next = s->next)
-	    if (s->cache > cache)
-		break;
+        for (; (s = next[i]); next = s->next)
+        if (s->cache > cache)
+            break;
         update[i] = &next[i];
     }
 
@@ -584,14 +622,14 @@ FcCacheInsert (FcCache *cache, struct stat *cache_stat)
     level = random_level ();
     if (level > fcCacheMaxLevel)
     {
-	level = fcCacheMaxLevel + 1;
-	update[fcCacheMaxLevel] = &fcCacheChains[fcCacheMaxLevel];
-	fcCacheMaxLevel = level;
+        level = fcCacheMaxLevel + 1;
+        update[fcCacheMaxLevel] = &fcCacheChains[fcCacheMaxLevel];
+        fcCacheMaxLevel = level;
     }
 
     s = malloc (sizeof (FcCacheSkip) + (level - 1) * sizeof (FcCacheSkip *));
     if (!s)
-	return FcFalse;
+    	return FcFalse;
 
     s->cache = cache;
     s->size = cache->size;
@@ -599,21 +637,21 @@ FcCacheInsert (FcCache *cache, struct stat *cache_stat)
     FcRefInit (&s->ref, 1);
     if (cache_stat)
     {
-	s->cache_dev = cache_stat->st_dev;
-	s->cache_ino = cache_stat->st_ino;
-	s->cache_mtime = cache_stat->st_mtime;
+        s->cache_dev = cache_stat->st_dev;
+        s->cache_ino = cache_stat->st_ino;
+        s->cache_mtime = cache_stat->st_mtime;
 #ifdef HAVE_STRUCT_STAT_ST_MTIM
-	s->cache_mtime_nano = cache_stat->st_mtim.tv_nsec;
+	    s->cache_mtime_nano = cache_stat->st_mtim.tv_nsec;
 #else
-	s->cache_mtime_nano = 0;
+	    s->cache_mtime_nano = 0;
 #endif
     }
     else
     {
-	s->cache_dev = 0;
-	s->cache_ino = 0;
-	s->cache_mtime = 0;
-	s->cache_mtime_nano = 0;
+        s->cache_dev = 0;
+        s->cache_ino = 0;
+        s->cache_mtime = 0;
+        s->cache_mtime_nano = 0;
     }
 
     /*
@@ -621,8 +659,8 @@ FcCacheInsert (FcCache *cache, struct stat *cache_stat)
      */
     for (i = 0; i < level; i++)
     {
-	s->next[i] = *update[i];
-	*update[i] = s;
+        s->next[i] = *update[i];
+        *update[i] = s;
     }
 
     unlock_cache ();
@@ -709,8 +747,9 @@ FcCacheFindByStat (struct stat *cache_stat)
     FcCacheSkip	    *s;
 
     lock_cache ();
+
     for (s = fcCacheChains[0]; s; s = s->next[0])
-	if (s->cache_dev == cache_stat->st_dev &&
+	if (s && s->cache_dev == cache_stat->st_dev &&
 	    s->cache_ino == cache_stat->st_ino &&
 	    s->cache_mtime == cache_stat->st_mtime)
 	{
@@ -984,6 +1023,7 @@ FcDirCacheMapFd (FcConfig *config, int fd, struct stat *fd_stat, struct stat *di
 	}
 #endif
     }
+
     if (!cache)
     {
 	cache = malloc (fd_stat->st_size);
@@ -1574,8 +1614,13 @@ FcDirCacheClean (const FcChar8 *cache_dir, FcBool verbose)
 	    continue;
 	/* skip cache files for different architectures and */
 	/* files which are not cache files at all */
+#ifndef __amigaos4__
 	if (strlen(ent->d_name) != 32 + strlen ("-" FC_ARCHITECTURE FC_CACHE_SUFFIX) ||
 	    strcmp(ent->d_name + 32, "-" FC_ARCHITECTURE FC_CACHE_SUFFIX))
+#else
+    if (strlen(ent->d_name) != 8 + strlen ("-" FC_ARCHITECTURE FC_CACHE_SUFFIX) ||
+        strcmp(ent->d_name + 8, "-" FC_ARCHITECTURE FC_CACHE_SUFFIX))
+#endif
 	    continue;
 
 	file_name = FcStrBuildFilename (dir, (FcChar8 *)ent->d_name, NULL);
@@ -1769,16 +1814,25 @@ FcDirCacheCreateTagFile (const FcChar8 *cache_dir)
     int 		 fd;
     FILE		*fp;
     FcAtomic		*atomic;
+#ifndef __amigais4__    
     static const FcChar8 cache_tag_contents[] =
 	"Signature: 8a477f597d28d172789f06886806bc55\n"
 	"# This file is a cache directory tag created by fontconfig.\n"
 	"# For information about cache directory tags, see:\n"
 	"#       http://www.brynosaurus.com/cachedir/\n";
     static size_t	 cache_tag_contents_size = sizeof (cache_tag_contents) - 1;
+#else
+    const FcChar8 cache_tag_contents[] =
+	"Signature: 8a477f597d28d172789f06886806bc55\n"
+	"# This file is a cache directory tag created by fontconfig.\n"
+	"# For information about cache directory tags, see:\n"
+	"#       http://www.brynosaurus.com/cachedir/\n";
+    size_t	 cache_tag_contents_size = sizeof (cache_tag_contents) - 1;
+#endif    
     FcBool		 ret = FcFalse;
 
     if (!cache_dir)
-	return FcFalse;
+	    return FcFalse;
 
     if (access ((char *) cache_dir, W_OK) == 0)
     {

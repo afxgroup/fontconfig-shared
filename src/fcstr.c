@@ -80,7 +80,10 @@ FcStrPlus (const FcChar8 *s1, const FcChar8 *s2)
 void
 FcStrFree (FcChar8 *s)
 {
-    free (s);
+    if (s) {
+        free (s);
+        s = NULL;
+    }
 }
 
 
@@ -952,7 +955,7 @@ FcStrIsAbsoluteFilename (const FcChar8 *s)
 	(isalpha (*s) && s[1] == ':' && (s[2] == '/' || s[2] == '\\')))
 	return FcTrue;
 #elif defined(__amigaos4__)
-    return strchr(s, ':');
+    return strchr((const char *) s, ':') >=0;
 #endif
     return *s == '/';
 }
@@ -1052,6 +1055,10 @@ FcStrLastSlash (const FcChar8  *path)
     FcChar8	    *slash;
 
     slash = (FcChar8 *) strrchr ((const char *) path, '/');
+#ifdef __amigaos4__
+    if (!slash)
+	    slash = (FcChar8 *) strrchr ((const char *) path, ':');
+#endif
 #ifdef _WIN32
     {
         FcChar8     *backslash;
@@ -1072,6 +1079,10 @@ FcStrDirname (const FcChar8 *file)
     FcChar8 *dir;
 
     slash = FcStrLastSlash (file);
+#ifdef __amigaos4__
+    if (*slash == ':')
+	    slash++;
+#endif
     if (!slash)
 	return FcStrCopy ((FcChar8 *) ".");
     dir = malloc ((slash - file) + 1);
@@ -1222,7 +1233,11 @@ FcStrCanonFilename (const FcChar8 *s)
     FcConvertDosPath ((char *) full);
     return FcStrCanonAbsoluteFilename (full);
 #else
+#ifdef __amigaos4__
+    if (s[0] == '/' || (FcChar8 *) strchr((const char *) s, ':'))
+#else
     if (s[0] == '/')
+#endif /* __amigaos4__ */       
 	return FcStrCanonAbsoluteFilename (s);
     else
     {
@@ -1635,7 +1650,7 @@ FcChar8 *
 FcStrListNext (FcStrList *list)
 {
     if (list->n >= list->set->num)
-	return 0;
+	    return 0;
     return list->set->strs[list->n++];
 }
 

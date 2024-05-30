@@ -51,7 +51,12 @@
 #if HAVE_XMLPARSE_H
 #include <xmlparse.h>
 #else
+#ifdef __amigaos4__
+#define __USE_INLINE__
+#include <proto/expat.h>
+#else
 #include <expat.h>
+#endif
 #endif
 
 #endif /* ENABLE_LIBXML2 */

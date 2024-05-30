@@ -30,17 +30,28 @@
 
 #include <proto/exec.h>
 #include <proto/fontconfig.h>
+#include <proto/freetype.h>
+#include <proto/expat.h>
+
+#include "init.h"
+
+struct DOSIFace *IDOS = NULL;
+struct Library *DOSBase = NULL;
+
+struct FreetypeIFace *IFreetype = NULL;
+struct Library *FreetypeBase = NULL;
+
+struct ExpatIFace *IExpat = NULL;
+struct Library *ExpatBase = NULL;
+
+struct FontconfigLibrary *fontconfigBase = NULL;
 
 /* Version Tag */
 #include "fontconfig.library_rev.h"
-STATIC CONST UBYTE USED verstag[] = VERSTAG;
+__attribute__ ((used)) static const UBYTE verstag[] = VERSTAG;
+__attribute__ ((used)) static const char *sc = "$STACK: 1512000";
 
-struct FontconfigLibrary
-{
-    struct Library libNode;
-    BPTR segList;
-    /* If you need more data fields, add them here */
-};
+
 
 /*
  * The system (and compiler) rely on a symbol named _start which marks
@@ -73,7 +84,14 @@ STATIC struct Library *libOpen(struct LibraryManagerInterface *Self, ULONG versi
 
     /* Add any specific open code here 
        Return 0 before incrementing OpenCnt to fail opening */
+    libBase->fcCacheMaxLevel = 0;
+    libBase->_fcConfig = NULL;
+    libBase->_FcConfigHomeEnabled = TRUE;
+    libBase->default_langs = NULL;
+    libBase->cache_lock = NULL;
+    libBase->_lock = NULL;
 
+    memset(libBase->fcCacheChains, 0, FC_CACHE_MAX_LEVEL * sizeof(struct FcCacheSkip *));
 
     /* Add up the open count */
     libBase->libNode.lib_OpenCnt++;
@@ -106,8 +124,7 @@ struct ExecIFace *IExec;
 STATIC APTR libExpunge(struct LibraryManagerInterface *Self)
 {
     /* If your library cannot be expunged, return 0 */
-    struct ExecIFace *IExec
-        = (struct ExecIFace *)(*(struct ExecBase **)4)->MainInterface;
+    struct ExecIFace *IExec = (struct ExecIFace *)(*(struct ExecBase **)4)->MainInterface;
     APTR result = (APTR)0;
     struct FontconfigLibrary *libBase = (struct FontconfigLibrary *)Self->Data.LibBase;
     if (libBase->libNode.lib_OpenCnt == 0)
@@ -115,6 +132,35 @@ STATIC APTR libExpunge(struct LibraryManagerInterface *Self)
     	result = (APTR)libBase->segList;
         /* Undo what the init code did */
 
+        if (IExpat) {
+            IExec->DropInterface((struct Interface *) IExpat);
+            IExpat = NULL;
+        }
+
+        if (ExpatBase) {
+            IExec->CloseLibrary((struct Library *) ExpatBase);
+            ExpatBase = NULL;
+        }
+
+        if (IFreetype) {
+            IExec->DropInterface((struct Interface *) IFreetype);
+            IFreetype = NULL;
+        }
+
+        if (FreetypeBase) {
+            IExec->CloseLibrary((struct Library *) FreetypeBase);
+            FreetypeBase = NULL;
+        }
+
+        if (IDOS) {
+            IExec->DropInterface((struct Interface *) IDOS);
+            IDOS = NULL;
+        }
+
+        if (DOSBase) {
+            IExec->CloseLibrary((struct Library *) DOSBase);
+            DOSBase = NULL;
+        }
 #ifdef __NEWLIB__
         if (INewlib)
         {
@@ -142,8 +188,6 @@ STATIC APTR libExpunge(struct LibraryManagerInterface *Self)
 /* The ROMTAG Init Function */
 STATIC struct Library *libInit(struct Library *LibraryBase, APTR seglist, struct Interface *exec)
 {
-    void init_fast_path_cache_semaphore(void);
-
     struct FontconfigLibrary *libBase = (struct FontconfigLibrary *)LibraryBase;
     IExec = (struct ExecIFace *)exec;
 
@@ -153,7 +197,6 @@ STATIC struct Library *libInit(struct Library *LibraryBase, APTR seglist, struct
     if (!INewlib)
         return NULL;
 #endif
-
 
     libBase->libNode.lib_Node.ln_Type = NT_LIBRARY;
     libBase->libNode.lib_Node.ln_Pri  = 0;
@@ -176,7 +219,36 @@ STATIC struct Library *libInit(struct Library *LibraryBase, APTR seglist, struct
                return NULL;
        } else return NULL; */
 
-       return (struct Library *)libBase;
+    ExpatBase = (struct Library *) IExec->OpenLibrary("expat.library", 52L);
+    if (ExpatBase) {
+        IExpat = (struct ExpatIFace *) IExec->GetInterface((struct Library *) ExpatBase, "main", 1, NULL);
+        if (!IExpat) {
+            IExec->CloseLibrary((struct Library *) ExpatBase);
+            return NULL;
+        }
+    }
+
+    FreetypeBase = (struct Library *) IExec->OpenLibrary("freetype.library", 54L);
+    if (FreetypeBase) {
+        IFreetype = (struct FreetypeIFace *) IExec->GetInterface((struct Library *) FreetypeBase, "main", 1, NULL);
+        if (!IFreetype) {
+            IExec->CloseLibrary((struct Library *) FreetypeBase);
+            return NULL;
+        }
+    }
+    
+    DOSBase = (struct Library *) IExec->OpenLibrary("dos.library", 52L);
+    if (DOSBase) {
+        IDOS = (struct DOSIFace *) IExec->GetInterface((struct Library *) DOSBase, "main", 1, NULL);
+        if (!IDOS) {
+            IExec->CloseLibrary((struct Library *) DOSBase);
+            return NULL;
+        }
+    }
+
+    fontconfigBase = libBase;
+
+    return (struct Library *) libBase;
 }
 
 /* ------------------- Manager Interface ------------------------ */

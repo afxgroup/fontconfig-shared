@@ -339,7 +339,7 @@ FcStatChecksum (const FcChar8 *file, struct stat *statb)
     if (FcStat (file, statb) == -1)
         return -1;
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__amigaos4__)
     /* We have a workaround of the broken stat() in FcStat() for Win32.
      * No need to do something further more.
      */
