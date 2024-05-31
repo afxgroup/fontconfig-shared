@@ -2534,7 +2534,7 @@ FcConfigHome (void)
 #endif
 #ifdef __amigaos4__
         if (home == NULL)
-		home = "ENVARC:fontconfig";
+		    home = "ENVARC:fontconfig";
 #endif
         return (FcChar8 *) home;
     }
@@ -2765,6 +2765,7 @@ FcConfigGetFilename (FcConfig      *config,
                 s = FcStrBuildFilename (sysroot, *p, NULL);
             else
                 s = *p;
+
             file = FcConfigFileExists (s, url);
             if (sysroot)
                 FcStrFree (s);

@@ -60,7 +60,7 @@ compilelib:
 	$(RM) $(TARGET) $(TARGET).debug*
 ifeq (,$(wildcard ../s/.libs/libfontconfig.a))
 ifeq (,$(wildcard ../configure))
-	cd ..; PKG_CONFIG_PATH=/SDK/local/newlib/lib/pkgconfig ./configure --prefix=$(shell pwd)/SDK --host=ppc-amigaos --exec-prefix=/usr/ppc-amigaos/SDK/local/newlib --disable-shared --enable-static --disable-dependency-tracking --with-default-fonts="Fonts:_TrueType" --with-cache-dir="PROGDIR:fontconfig/cache" CPPFLAGS="-gstabs" --with-templatedir="PROGDIR:fontconfig/conf.avail" --with-baseconfigdir="PROGDIR:fontconfig"  --disable-docs --disable-docbook; cd amiga_shared;
+	cd ..; PKG_CONFIG_PATH=/SDK/local/newlib/lib/pkgconfig ./configure --prefix=$(shell pwd)/SDK --host=ppc-amigaos --exec-prefix=/usr/ppc-amigaos/SDK/local/newlib --disable-shared --enable-static --disable-dependency-tracking --with-default-fonts="Fonts:_TrueType" --with-cache-dir="ENVARC:fontconfig/cache" CPPFLAGS="-gstabs" --with-templatedir="ENVARC:fontconfig/conf.avail" --with-baseconfigdir="ENVARC:fontconfig/"  --disable-docs --disable-docbook; cd amiga_shared;
 endif
 	cd ..; make && make install; cd amiga_shared;
 endif
