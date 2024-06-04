@@ -217,11 +217,13 @@ main(void)
     fprintf (fp, "%s", s);
     fclose (fp);
     retval++;
+#ifndef __amigaos4__    
     fprintf (stderr, "D: Checking file path\n");
     ret = FcConfigRealFilename (cfg, "~/.fonts.conf");
     if (!ret)
 	goto bail;
     retval++;
+#endif    
     if (strcmp ((const char *) s, (const char *) ret) != 0)
 	goto bail;
     free (ret);
@@ -246,11 +248,13 @@ main(void)
     fprintf (fp, "%s", s);
     fclose (fp);
     retval++;
+#ifndef __amigaos4__    
     fprintf (stderr, "D: Checking file path\n");
     ret = FcConfigRealFilename (cfg, "~/.fonts.conf");
     if (!ret)
 	goto bail;
     retval++;
+#endif
     if (strcmp ((const char *) s, (const char *) ret) != 0)
 	goto bail;
     retval = 0;
